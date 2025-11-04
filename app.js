@@ -10,6 +10,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 connectDB();
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 app.use("/api", userRouter);
 
 // app.listen(process.env.PORT, () => {
