@@ -2,7 +2,6 @@ import express from "express";
 import D_User from "../models/d_userSchema.js";
 import { authMiddleware } from "../middleware/authmiddleware.js";
 
-
 const router = express.Router();
 
 // ✅ Get user cart
@@ -39,15 +38,17 @@ router.put("/save", authMiddleware, async (req, res) => {
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const { size, color } = req.body; // optional variations
+    const { size, color } = req.body;
 
     const user = await D_User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Remove that specific product (matching id + size + color)
-    user.cart = user.cart.filter(
-      (item) => !(item.id === id && item.size === size && item.color === color)
-    );
+    user.cart = user.cart.filter((item) => {
+      if (item.id !== id) return true;
+      if (size && item.size !== size) return true;
+      if (color && item.color !== color) return true;
+      return false; // remove this item
+    });
 
     await user.save();
 
