@@ -15,7 +15,7 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Save or merge cart
+// ✅ Save or merge cart (guest + user)
 router.put("/save", authMiddleware, async (req, res) => {
   try {
     const user = await D_User.findById(req.user._id);
@@ -34,7 +34,30 @@ router.put("/save", authMiddleware, async (req, res) => {
   }
 });
 
-// Helper function for merging guest + user carts
+// ✅ Delete single product from user's cart
+router.delete("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { size, color } = req.body; // optional variations
+
+    const user = await D_User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Remove that specific product (matching id + size + color)
+    user.cart = user.cart.filter(
+      (item) => !(item.id === id && item.size === size && item.color === color)
+    );
+
+    await user.save();
+
+    res.json({ message: "Item removed from cart", cart: user.cart });
+  } catch (error) {
+    console.error("Error removing item:", error);
+    res.status(500).json({ message: "Failed to remove item", error });
+  }
+});
+
+// ✅ Helper function for merging guest + user carts
 function mergeCarts(existingCart, newCart) {
   const merged = [...existingCart];
   for (const item of newCart) {
