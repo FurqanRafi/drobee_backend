@@ -36,12 +36,6 @@ const d_userSchema = new mongoose.Schema({
     required: true,
   },
 
-   // ✅ Added for persistent cart
-  cart: {
-    type: Array,
-    default: [],
-  },
-
   // ✅ For Forgot Password
   resetPasswordCode: String, // Store 6-digit code
   resetPasswordExpires: Date,
