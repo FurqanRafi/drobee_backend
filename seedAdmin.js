@@ -5,7 +5,7 @@ import D_Admin from "./models/d_AdminSchema.js";
 connectDB();
 const seedAdmin = async () => {
   try {
-    const admin = await D_Admin.findOne({ email: "admin@drobee.com" });
+    const admin = await D_Admin.findOne({ email: "admin@gmail.com" });
     if (admin) {
       console.log("Admin already exists");
       return;
