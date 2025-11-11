@@ -1,4 +1,4 @@
-import D_User from "../models/d_userSchema.js";
+import D_Admin from "../models/d_AdminSchema.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -8,7 +8,7 @@ const generateToken = (id) => {
 export const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const admin = await D_User.findOne({ email });
+    const admin = await D_Admin.findOne({ email });
     if (!admin) {
       return res.status(400).json({ message: "Admin not found" });
     }

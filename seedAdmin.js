@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
-import D_Admin from "./models/d_AdminSchema.js";
+
 import connectDB from "./config/mongodbConnect.js";
+import D_Admin from "./models/d_AdminSchema.js";
 connectDB();
 const seedAdmin = async () => {
   try {
