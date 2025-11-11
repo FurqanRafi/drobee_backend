@@ -1,8 +1,13 @@
 import mongoose from "mongoose";
 
 const d_proiductSchema = new mongoose.Schema({
-  image: [String],
-  heading: String, // unique: true hata diya
+  variants: [
+    {
+      colour: String,
+      images: String,
+    },
+  ],
+  heading: String,
   style: String,
   price: String,
   desc: String,
@@ -14,7 +19,7 @@ const d_proiductSchema = new mongoose.Schema({
   },
   popular: Boolean,
   latest: Boolean,
-  colours: [String],
+  // colours: [String],
   sizes: [String],
 });
 
