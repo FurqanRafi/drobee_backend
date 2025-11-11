@@ -12,7 +12,7 @@ const seedAdmin = async () => {
     }
     const hashedPassword = await bcrypt.hash("admin", 10);
     await D_Admin.create({
-      email: "admin@drobee.com",
+      email: "admin@gmail.com",
       password: hashedPassword,
     });
     console.log("Admin created");
