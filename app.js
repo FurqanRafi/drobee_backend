@@ -22,8 +22,8 @@ app.use("/api", productRouter);
 app.use("/api", categoryRouter);
 app.use("/api/admin", adminRouter);
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
-});
+// app.listen(process.env.PORT, () => {
+//   console.log(`Server running on port ${process.env.PORT}`);
+// });
 
 export default app;
