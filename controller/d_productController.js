@@ -34,13 +34,29 @@ export const addProduct = async (req, res) => {
   }
 };
 
-// ✅ Get all products (with category populated)
-export const getAllProducts = async (req, res) => {
+// backend/controllers/productController.js
+export const getProducts = async (req, res) => {
   try {
     const products = await d_ProductSchema.find().populate("category");
-    res.status(200).json({ products });
+
+    const formatted = products.map((p) => ({
+      id: p._id,
+      heading: p.heading,
+      style: p.style,
+      price: Number(p.price),
+      popular: p.popular,
+      latest: p.latest,
+      image: p.variants.map((v) => v.images),
+      colors: p.variants.map((v) => ({
+        name: v.colour,
+        img: v.images,
+      })),
+      sizes: p.sizes,
+    }));
+
+    res.status(200).json(formatted);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Failed to fetch products", error });
   }
 };
 
@@ -69,12 +85,10 @@ export const updateProduct = async (req, res) => {
     if (!updatedProduct)
       return res.status(404).json({ message: "Product not found" });
 
-    res
-      .status(200)
-      .json({
-        message: "Product updated successfully",
-        product: updatedProduct,
-      });
+    res.status(200).json({
+      message: "Product updated successfully",
+      product: updatedProduct,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
