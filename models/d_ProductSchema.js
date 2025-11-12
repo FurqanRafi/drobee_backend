@@ -17,7 +17,6 @@ const imageSchema = new mongoose.Schema({
   url: { type: String, required: true },
   colour: {
     type: String, // frontend se string ID ya name bhejna
-    required: true,
   },
 });
 
