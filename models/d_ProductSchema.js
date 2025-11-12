@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
-// ✅ Color Subschema
+// ✅ Color Subschema (embedded)
 const colorSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  hex: { type: String, match: /^#([A-Fa-f0-9]{6})$/ }, // Optional HEX validation
+  hex: { type: String, match: /^#([A-Fa-f0-9]{6})$/ }, // optional HEX validation
 });
 
 // ✅ Size Subschema
@@ -16,8 +16,8 @@ const sizeSchema = new mongoose.Schema({
 const imageSchema = new mongoose.Schema({
   url: { type: String, required: true },
   colour: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Color", // You can rename this if your color collection has a different model name
+    type: String, // frontend se string ID ya name bhejna
+    required: true,
   },
 });
 
@@ -37,21 +37,21 @@ const d_ProductSchema = new mongoose.Schema(
       required: true,
     },
 
-    // ✅ Product Variants (if you keep multiple color/image combinations)
+    // ✅ Product Variants (optional)
     variants: [
       {
-        colour: String, // For compatibility with existing data
-        images: [String], // multiple image URLs allowed
+        colour: String, // string for compatibility
+        images: [String], // multiple image URLs
       },
     ],
 
-    // ✅ Images Array (like new model)
+    // ✅ Images Array
     images: [imageSchema],
 
-    // ✅ Colors Array
+    // ✅ Colors Array (embedded)
     colors: [colorSchema],
 
-    // ✅ Sizes Array (each size has label + price)
+    // ✅ Sizes Array
     sizes: [sizeSchema],
 
     // ✅ Flags
