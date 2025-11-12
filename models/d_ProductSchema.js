@@ -63,5 +63,4 @@ const d_ProductSchema = new mongoose.Schema(
 );
 
 // ✅ Export Model
-export default mongoose.models.D_Product ||
-  mongoose.model("D_Product", d_ProductSchema);
+export default mongoose.model("D_Product", d_ProductSchema);
