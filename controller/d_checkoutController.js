@@ -97,13 +97,3 @@ export const getAllCheckout = async (req, res) => {
   }
 };
 
-export const deleteCheckouts = async (req, res) => {
-  try {
-    const checkout = await d_checkout.findByIdAndDelete(req.params.id);
-    if (!checkout)
-      return res.status(404).json({ message: "Checkout not found" });
-    res.status(200).json(checkout);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
