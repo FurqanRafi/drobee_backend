@@ -1,4 +1,4 @@
-import D_Shipping from "../models/d_ShippingSchema.js";
+import D_Shipping from "../models/d_shippingSchema.js";
 
 export const createShipping = async (req, res) => {
   try {
