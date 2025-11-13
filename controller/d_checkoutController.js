@@ -72,3 +72,27 @@ export const deleteCheckout = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const updateCheckoutStatus = async (req, res) => {
+  try {
+    const checkout = await d_checkout.findByIdAndUpdate(
+      req.params.id,
+      { status: req.body.status },
+      { new: true, runValidators: true }
+    );
+    if (!checkout)
+      return res.status(404).json({ message: "Checkout not found" });
+    res.status(200).json(checkout);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAllCheckout = async (req, res) => {
+  try {
+    const checkout = await d_checkout.find();
+    res.status(200).json(checkout);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

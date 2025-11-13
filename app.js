@@ -10,9 +10,15 @@ import shippingRouter from "./routers/d_shippingRoute.js";
 import checkoutRouter from "./routers/d_checkoutRouter.js";
 import cors from "cors";
 const app = express();
+app.use(
+  cors({
+    origin: "*", // or your frontend domain
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 
 connectDB();
 

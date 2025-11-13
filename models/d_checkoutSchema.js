@@ -27,6 +27,12 @@ const d_checkoutSchema = new mongoose.Schema(
       },
     ],
 
+    status: {
+      type: String,
+      enum: ["pending", "shipped", "delivered", "cancelled"],
+      default: "pending",
+    },
+
     discount: { type: Number, default: 0 },
 
     totalAmount: { type: Number, required: true },
