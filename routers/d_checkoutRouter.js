@@ -6,6 +6,7 @@ import {
   updateCheckout,
   getAllCheckout,
   updateCheckoutStatus,
+  deleteCheckouts,
 } from "../controller/d_checkoutController.js";
 
 const router = express.Router();
@@ -16,5 +17,5 @@ router.put("/checkout/:id", updateCheckout);
 router.delete("/checkout/:id", deleteCheckout);
 router.get("/checkout", getAllCheckout);
 router.put("/checkout/:id", updateCheckoutStatus);
-
+router.delete("/checkout/:id", deleteCheckouts);
 export default router;
