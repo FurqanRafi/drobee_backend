@@ -2,10 +2,18 @@ import d_checkout from "../models/d_checkoutSchema.js";
 
 export const createCheckout = async (req, res) => {
   try {
-    const { user, products, totalAmount, shippingCost, shippingMethod, discount, paymentMethod } = req.body;
+    const {
+      user,
+      products,
+      totalAmount,
+      shippingCost,
+      shippingMethod,
+      discount,
+      paymentMethod,
+    } = req.body;
 
-    if (!user || !products || !totalAmount) {
-      return res.status(400).json({ message: "All fields are required" });
+    if (!user || !user._id) {
+      return res.status(400).json({ message: "User ID is required" });
     }
 
     if (!Array.isArray(products) || products.length === 0) {
@@ -27,21 +35,31 @@ export const createCheckout = async (req, res) => {
       }
     }
 
-    const checkout = await d_checkout.create({ 
-      user, 
-      products, 
+    // ⭐ FIXED USER STRUCTURE ⭐
+    const checkout = await d_checkout.create({
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+      },
+
+      products,
       totalAmount,
       shippingCost: shippingCost || 0,
-      shippingMethod: shippingMethod || user.shipping || "Standard Shipping",
+      shippingMethod: shippingMethod || "Standard Shipping",
       discount: discount || 0,
-      paymentMethod: paymentMethod || "Cash on Delivery"
+      paymentMethod: paymentMethod || "Cash on Delivery",
     });
-    
+
     res.status(201).json(checkout);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+// ===== Other CRUDs same (correct) =====
 
 export const getCheckout = async (req, res) => {
   try {
