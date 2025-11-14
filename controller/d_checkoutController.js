@@ -2,18 +2,10 @@ import d_checkout from "../models/d_checkoutSchema.js";
 
 export const createCheckout = async (req, res) => {
   try {
-    const {
-      user,
-      products,
-      totalAmount,
-      shippingCost,
-      shippingMethod,
-      discount,
-      paymentMethod,
-    } = req.body;
+    const { user, products, totalAmount } = req.body;
 
-    if (!user || !user._id) {
-      return res.status(400).json({ message: "User ID is required" });
+    if (!user || !products || !totalAmount) {
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     if (!Array.isArray(products) || products.length === 0) {
@@ -35,31 +27,12 @@ export const createCheckout = async (req, res) => {
       }
     }
 
-    // ⭐ FIXED USER STRUCTURE ⭐
-    const checkout = await d_checkout.create({
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        address: user.address,
-      },
-
-      products,
-      totalAmount,
-      shippingCost: shippingCost || 0,
-      shippingMethod: shippingMethod || "Standard Shipping",
-      discount: discount || 0,
-      paymentMethod: paymentMethod || "Cash on Delivery",
-    });
-
+    const checkout = await d_checkout.create({ user, products, totalAmount });
     res.status(201).json(checkout);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
-// ===== Other CRUDs same (correct) =====
 
 export const getCheckout = async (req, res) => {
   try {
@@ -117,7 +90,7 @@ export const updateCheckoutStatus = async (req, res) => {
 
 export const getAllCheckout = async (req, res) => {
   try {
-    const checkout = await d_checkout.find().sort({ createdAt: -1 });
+    const checkout = await d_checkout.find();
     res.status(200).json(checkout);
   } catch (error) {
     res.status(500).json({ message: error.message });
