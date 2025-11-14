@@ -6,7 +6,6 @@ import {
   updateCheckout,
   getAllCheckout,
   updateCheckoutStatus,
-  getCheckoutByUserId, // 👈 NEW IMPORT
 } from "../controller/d_checkoutController.js";
 
 const router = express.Router();
@@ -16,6 +15,6 @@ router.get("/checkout/:id", getCheckout);
 router.put("/checkout/:id", updateCheckout);
 router.delete("/checkout/:id", deleteCheckout);
 router.get("/checkout", getAllCheckout);
-router.get("/checkout/user/:userId", getCheckoutByUserId); // 👈 NEW ROUTE (user ID se orders fetch)
+router.put("/checkout/:id", updateCheckoutStatus);
 
 export default router;
