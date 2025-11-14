@@ -33,9 +33,11 @@ const d_checkoutSchema = new mongoose.Schema(
       default: "pending",
     },
 
+    totalAmount: Number,
     discount: { type: Number, default: 0 },
-
-    totalAmount: { type: Number, required: true },
+    shippingCost: { type: Number, default: 0 }, // ✅ Add shipping cost field
+    paymentMethod: { type: String, default: "Cash on Delivery" },
+    status: { type: String, default: "pending" },
   },
   { timestamps: true }
 );

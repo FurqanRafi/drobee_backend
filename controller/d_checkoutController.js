@@ -2,7 +2,7 @@ import d_checkout from "../models/d_checkoutSchema.js";
 
 export const createCheckout = async (req, res) => {
   try {
-    const { user, products, totalAmount } = req.body;
+    const { user, products, totalAmount, shippingCost, shippingMethod, discount, paymentMethod } = req.body;
 
     if (!user || !products || !totalAmount) {
       return res.status(400).json({ message: "All fields are required" });
@@ -27,7 +27,16 @@ export const createCheckout = async (req, res) => {
       }
     }
 
-    const checkout = await d_checkout.create({ user, products, totalAmount });
+    const checkout = await d_checkout.create({ 
+      user, 
+      products, 
+      totalAmount,
+      shippingCost: shippingCost || 0,
+      shippingMethod: shippingMethod || user.shipping || "Standard Shipping",
+      discount: discount || 0,
+      paymentMethod: paymentMethod || "Cash on Delivery"
+    });
+    
     res.status(201).json(checkout);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -90,10 +99,9 @@ export const updateCheckoutStatus = async (req, res) => {
 
 export const getAllCheckout = async (req, res) => {
   try {
-    const checkout = await d_checkout.find();
+    const checkout = await d_checkout.find().sort({ createdAt: -1 });
     res.status(200).json(checkout);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
