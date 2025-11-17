@@ -3,7 +3,11 @@ import mongoose from "mongoose";
 const d_checkoutSchema = new mongoose.Schema(
   {
     user: {
-      id: {
+        id:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
         username: String,
         email: String,
         phone: String,
@@ -11,7 +15,7 @@ const d_checkoutSchema = new mongoose.Schema(
         postalCode: String,
         city: String,
         country: String,
-      },
+
     },
 
     billingDetails: {

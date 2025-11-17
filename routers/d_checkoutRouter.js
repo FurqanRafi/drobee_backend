@@ -15,9 +15,8 @@ const router = express.Router();
 // ✅ PUBLIC ROUTES - No token needed
 router.get("/checkout", getAllCheckout);
 router.get("/checkout/:id", getCheckout);
-router.get("/checkout/user/:userId", authMiddleware, getCheckoutByUser); // 👈 Token add kiya
+router.get("/checkout/user/:userId", authMiddleware, getCheckoutByUser);
 
-// ✅ PROTECTED ROUTES - Token needed
 router.post("/checkout", authMiddleware, createCheckout);
 router.put("/checkout/:id", authMiddleware, updateCheckout);
 router.put("/checkout/:id/status", authMiddleware, updateCheckoutStatus);
