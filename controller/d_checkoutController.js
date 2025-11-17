@@ -101,11 +101,19 @@ export const updateCheckoutStatus = async (req, res) => {
   }
 };
 
+// ✅ NAYA - Sirf admin ko access do
 export const getAllCheckout = async (req, res) => {
   try {
-    const checkout = await d_checkout.find();
+    // 👇 Check if user is admin (optional, agar admin check chahiye)
+    console.log("🔍 User from token:", req.user);
+
+    const checkout = await d_checkout
+      .find()
+      .populate("userId", "firstname lastname email");
+
     res.status(200).json(checkout);
   } catch (error) {
+    console.error("❌ Error fetching all checkouts:", error);
     res.status(500).json({ message: error.message });
   }
 };

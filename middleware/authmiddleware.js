@@ -9,11 +9,14 @@ export const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    req.user = decoded; // Contains adminId OR userId
-
+    
+    // 👇 Debug karo token decode ho raha hai ya nahi
+    console.log("🔓 Decoded Token:", decoded);
+    
+    req.user = { _id: decoded.id || decoded._id }; // ✅ Proper format
     next();
   } catch (error) {
+    console.error("❌ Token verification failed:", error.message);
     res.status(401).json({ message: "Invalid token" });
   }
 };
