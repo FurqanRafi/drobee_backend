@@ -1,22 +1,33 @@
-export const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+import jwt from "jsonwebtoken";
+import D_User from "../models/d_userSchema.js";
+import D_Admin from "../models/d_AdminSchema.js";
 
-  if (!authHeader) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-
-  const token = authHeader.split(" ")[1];
-
+export const authMiddleware = async (req, res, next) => {
   try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    // 👇 Debug karo token decode ho raha hai ya nahi
-    console.log("🔓 Decoded Token:", decoded);
-    
-    req.user = { _id: decoded.id || decoded._id }; // ✅ Proper format
+
+    // USER check
+    let user = await D_User.findById(decoded.id).select("-password");
+
+    // ADMIN check
+    if (!user) {
+      user = await D_Admin.findById(decoded.id).select("-password");
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: "User/Admin not found" });
+    }
+
+    req.user = user;
     next();
   } catch (error) {
-    console.error("❌ Token verification failed:", error.message);
-    res.status(401).json({ message: "Invalid token" });
+    res.status(401).json({ message: "Invalid or expired token" });
   }
 };
