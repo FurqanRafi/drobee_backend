@@ -2,9 +2,16 @@ import d_checkout from "../models/d_checkoutSchema.js";
 
 export const createCheckout = async (req, res) => {
   try {
-    const { user, products, totalAmount } = req.body;
+    // 🚨 Logged-in user from middleware
+    const loggedUser = req.user;
 
-    if (!user || !products || !totalAmount) {
+    if (!loggedUser) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const { billingDetails, products, totalAmount } = req.body;
+
+    if (!billingDetails || !products || !totalAmount) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -14,20 +21,14 @@ export const createCheckout = async (req, res) => {
         .json({ message: "Products must be a non-empty array" });
     }
 
-    for (const product of products) {
-      if (
-        !product.productName ||
-        !product.image ||
-        !product.price ||
-        !product.quantity
-      ) {
-        return res.status(400).json({
-          message: "Each product must have name, image, price, and quantity",
-        });
-      }
-    }
+    // 🚨 CREATE ORDER USING LOGGED-IN USER ONLY
+    const checkout = await d_checkout.create({
+      userId: loggedUser._id, // always current logged-in user
+      billingDetails: billingDetails, // form email stored here, NOT used for account
+      products,
+      totalAmount,
+    });
 
-    const checkout = await d_checkout.create({ user, products, totalAmount });
     res.status(201).json(checkout);
   } catch (error) {
     res.status(500).json({ message: error.message });

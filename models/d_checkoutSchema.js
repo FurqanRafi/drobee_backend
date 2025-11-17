@@ -2,23 +2,23 @@ import mongoose from "mongoose";
 
 const d_checkoutSchema = new mongoose.Schema(
   {
-    user: {
-      _id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
 
-      email: { type: String, required: true },
-      firstname: { type: String, required: true },
-      lastname: { type: String, required: true },
-      country: { type: String, required: true },
-      address: { type: String, required: true },
-      city: { type: String, required: true },
-      state: { type: String, required: true },
-      postalCode: { type: String, required: true },
-      phone: { type: String, required: true },
-      shipping: { type: String, required: true },
+    billingDetails: {
+      email: String,
+      firstname: String,
+      lastname: String,
+      country: String,
+      address: String,
+      city: String,
+      state: String,
+      postalCode: String,
+      phone: String,
+      shipping: String,
     },
 
     products: [
@@ -41,7 +41,7 @@ const d_checkoutSchema = new mongoose.Schema(
 
     totalAmount: Number,
     discount: { type: Number, default: 0 },
-    shippingCost: { type: Number, default: 0 }, // ✅ Add shipping cost field
+    shippingCost: { type: Number, default: 0 },
     paymentMethod: { type: String, default: "Cash on Delivery" },
   },
   { timestamps: true }

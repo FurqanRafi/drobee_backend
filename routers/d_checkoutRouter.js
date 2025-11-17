@@ -7,14 +7,15 @@ import {
   getAllCheckout,
   updateCheckoutStatus,
 } from "../controller/d_checkoutController.js";
+import { authMiddleware } from "../middleware/authmiddleware.js";
 
 const router = express.Router();
 
-router.post("/checkout", createCheckout);
-router.get("/checkout/:id", getCheckout);
-router.put("/checkout/:id", updateCheckout);
-router.delete("/checkout/:id", deleteCheckout);
-router.get("/checkout", getAllCheckout);
-router.put("/checkout/:id", updateCheckoutStatus);
+router.post("/checkout", authMiddleware, createCheckout);
+router.get("/checkout/:id", authMiddleware, getCheckout);
+router.put("/checkout/:id", authMiddleware, updateCheckout);
+router.delete("/checkout/:id", authMiddleware, deleteCheckout);
+router.get("/checkout", authMiddleware, getAllCheckout);
+router.put("/checkout/:id/status", authMiddleware, updateCheckoutStatus);
 
 export default router;
