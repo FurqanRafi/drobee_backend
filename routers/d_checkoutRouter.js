@@ -12,12 +12,15 @@ import { authMiddleware } from "../middleware/authmiddleware.js";
 
 const router = express.Router();
 
-router.get("/checkout", authMiddleware, getAllCheckout); // 👈 Pehle
-router.get("/checkout/user/:userId", authMiddleware, getCheckoutByUser);
-router.put("/checkout/:id/status", authMiddleware, updateCheckoutStatus);
+// ✅ PUBLIC ROUTES - No token needed
+router.get("/checkout", getAllCheckout);
+router.get("/checkout/:id", getCheckout);
+router.get("/checkout/user/:userId", getCheckoutByUser);
+
+// ✅ PROTECTED ROUTES - Token needed
 router.post("/checkout", authMiddleware, createCheckout);
-router.get("/checkout/:id", authMiddleware, getCheckout); // 👈 Baad mein
 router.put("/checkout/:id", authMiddleware, updateCheckout);
+router.put("/checkout/:id/status", authMiddleware, updateCheckoutStatus);
 router.delete("/checkout/:id", authMiddleware, deleteCheckout);
 
 export default router;
