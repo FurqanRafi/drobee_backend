@@ -2,7 +2,6 @@ import d_checkout from "../models/d_checkoutSchema.js";
 
 export const createCheckout = async (req, res) => {
   try {
-    // 🚨 Logged-in user from middleware
     const loggedUser = req.user;
 
     if (!loggedUser) {
@@ -21,10 +20,19 @@ export const createCheckout = async (req, res) => {
         .json({ message: "Products must be a non-empty array" });
     }
 
-    // 🚨 CREATE ORDER USING LOGGED-IN USER ONLY
     const checkout = await d_checkout.create({
-      userId: loggedUser._id, // always current logged-in user
-      billingDetails: billingDetails, // form email stored here, NOT used for account
+      user: {
+        id: {
+          username: loggedUser.username,
+          email: loggedUser.email,
+          phone: loggedUser.phone,
+          address: loggedUser.address,
+          postalCode: loggedUser.postalCode,
+          city: loggedUser.city,
+          country: loggedUser.country,
+        },
+      },
+      billingDetails,
       products,
       totalAmount,
     });
@@ -46,29 +54,16 @@ export const getCheckout = async (req, res) => {
   }
 };
 
-// ✅ FIXED - Proper logging aur error handling
 export const getCheckoutByUser = async (req, res) => {
   try {
-    const { userId } = req.params;
-
-    console.log("🔍 Fetching orders for userId:", userId);
-    console.log("🔍 Logged-in user from token:", req.user);
-
-    // ✅ Security check - Only fetch if requesting own orders
-    if (req.user._id.toString() !== userId) {
-      console.log("❌ Unauthorized: User trying to access other's orders");
-      return res.status(403).json({ message: "Unauthorized access" });
-    }
+    const loggedEmail = req.user.email;
 
     const orders = await d_checkout
-      .find({ userId: userId })
+      .find({ "user.id.email": loggedEmail })
       .sort({ createdAt: -1 });
-
-    console.log("✅ Found orders:", orders.length);
 
     res.status(200).json(orders);
   } catch (error) {
-    console.error("❌ Error in getCheckoutByUser:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -116,12 +111,8 @@ export const updateCheckoutStatus = async (req, res) => {
   }
 };
 
-// ✅ NAYA - Sirf admin ko access do
 export const getAllCheckout = async (req, res) => {
   try {
-    // 👇 Check if user is admin (optional, agar admin check chahiye)
-    console.log("🔍 User from token:", req.user);
-
     const checkout = await d_checkout
       .find()
       .populate("userId", "firstname lastname email");

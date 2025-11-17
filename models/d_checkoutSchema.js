@@ -2,10 +2,16 @@ import mongoose from "mongoose";
 
 const d_checkoutSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "D_User",
-      required: true,
+    user: {
+      id: {
+        username: String,
+        email: String,
+        phone: String,
+        address: String,
+        postalCode: String,
+        city: String,
+        country: String,
+      },
     },
 
     billingDetails: {
