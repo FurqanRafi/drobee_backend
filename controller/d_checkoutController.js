@@ -2,7 +2,7 @@ import d_checkout from "../models/d_checkoutSchema.js";
 
 export const createCheckout = async (req, res) => {
   try {
-    const loggedUser = req.user;
+    const loggedUser = req.user; // user from token
 
     if (!loggedUser) {
       return res.status(401).json({ message: "User not authenticated" });
@@ -12,12 +12,6 @@ export const createCheckout = async (req, res) => {
 
     if (!billingDetails || !products || !totalAmount) {
       return res.status(400).json({ message: "All fields are required" });
-    }
-
-    if (!Array.isArray(products) || products.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Products must be a non-empty array" });
     }
 
     const checkout = await d_checkout.create({
@@ -32,6 +26,7 @@ export const createCheckout = async (req, res) => {
           country: loggedUser.country,
         },
       },
+
       billingDetails,
       products,
       totalAmount,
@@ -54,12 +49,18 @@ export const getCheckout = async (req, res) => {
   }
 };
 
+// ✅ FIXED - Proper logging aur error handling
 export const getCheckoutByUser = async (req, res) => {
   try {
-    const loggedEmail = req.user.email;
+    const { email } = req.params;
+
+    // Only allow the logged-in user to see their orders
+    if (req.user.email !== email) {
+      return res.status(403).json({ message: "Unauthorized access" });
+    }
 
     const orders = await d_checkout
-      .find({ "user.id.email": loggedEmail })
+      .find({ "user.id.email": email })
       .sort({ createdAt: -1 });
 
     res.status(200).json(orders);
@@ -114,7 +115,6 @@ export const updateCheckoutStatus = async (req, res) => {
 export const getAllCheckout = async (req, res) => {
   try {
     const checkout = await d_checkout.find();
-
     res.status(200).json(checkout);
   } catch (error) {
     res.status(500).json({ message: error.message });
