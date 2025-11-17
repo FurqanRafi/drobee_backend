@@ -46,6 +46,18 @@ export const getCheckout = async (req, res) => {
   }
 };
 
+export const getCheckoutByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const orders = await d_checkout.find({ userId }).sort({ createdAt: -1 });
+
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const updateCheckout = async (req, res) => {
   try {
     const checkout = await d_checkout.findByIdAndUpdate(
