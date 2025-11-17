@@ -113,13 +113,10 @@ export const updateCheckoutStatus = async (req, res) => {
 
 export const getAllCheckout = async (req, res) => {
   try {
-    const checkout = await d_checkout
-      .find()
-      .populate("userId", "firstname lastname email");
+    const checkout = await d_checkout.find();
 
     res.status(200).json(checkout);
   } catch (error) {
-    console.error("❌ Error fetching all checkouts:", error);
     res.status(500).json({ message: error.message });
   }
 };
