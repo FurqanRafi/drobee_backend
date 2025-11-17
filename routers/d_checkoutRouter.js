@@ -13,7 +13,7 @@ import { authMiddleware } from "../middleware/authmiddleware.js";
 const router = express.Router();
 
 router.post("/checkout", authMiddleware, createCheckout);
-router.get("/checkout/:id", authMiddleware, getCheckout);
+router.get("/checkout", authMiddleware, getCheckout);
 router.put("/checkout/:id", authMiddleware, updateCheckout);
 router.delete("/checkout/:id", authMiddleware, deleteCheckout);
 router.get("/checkout", authMiddleware, getAllCheckout);
