@@ -2,7 +2,7 @@ import d_checkout from "../models/d_checkoutSchema.js";
 
 export const createCheckout = async (req, res) => {
   try {
-    const loggedUser = req.user; // user from token
+    const loggedUser = req.user;
 
     if (!loggedUser) {
       return res.status(401).json({ message: "User not authenticated" });
@@ -49,12 +49,10 @@ export const getCheckout = async (req, res) => {
   }
 };
 
-// ✅ FIXED - Proper logging aur error handling
 export const getCheckoutByUser = async (req, res) => {
   try {
     const { email } = req.params;
 
-    // Only allow the logged-in user to see their orders
     if (req.user.email !== email) {
       return res.status(403).json({ message: "Unauthorized access" });
     }
