@@ -46,14 +46,29 @@ export const getCheckout = async (req, res) => {
   }
 };
 
+// ✅ FIXED - Proper logging aur error handling
 export const getCheckoutByUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const orders = await d_checkout.find({ userId }).sort({ createdAt: -1 });
+    console.log("🔍 Fetching orders for userId:", userId);
+    console.log("🔍 Logged-in user from token:", req.user);
+
+    // ✅ Security check - Only fetch if requesting own orders
+    if (req.user._id.toString() !== userId) {
+      console.log("❌ Unauthorized: User trying to access other's orders");
+      return res.status(403).json({ message: "Unauthorized access" });
+    }
+
+    const orders = await d_checkout
+      .find({ userId: userId })
+      .sort({ createdAt: -1 });
+
+    console.log("✅ Found orders:", orders.length);
 
     res.status(200).json(orders);
   } catch (error) {
+    console.error("❌ Error in getCheckoutByUser:", error);
     res.status(500).json({ message: error.message });
   }
 };
