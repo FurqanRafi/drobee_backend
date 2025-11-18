@@ -9,6 +9,7 @@ import {
   changeEmail,
   forgotPassword,
   resetPassword,
+  getUsersCount,
 } from "../controller/d_userController.js";
 import { authMiddleware } from "../middleware/authmiddleware.js";
 
@@ -26,6 +27,6 @@ router.put("/profile/change-email", authMiddleware, changeEmail);
 
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
-
+router.get("/users/count", getUsersCount);
 
 export default router;
