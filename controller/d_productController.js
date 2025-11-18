@@ -44,7 +44,7 @@ export const getAllProducts = async (req, res) => {
   try {
     let {
       page = 1,
-      limit = 10,
+      limit = 8,
       search = "",
       category,
       color,
