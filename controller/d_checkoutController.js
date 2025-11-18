@@ -138,6 +138,7 @@ export const getAllCheckout = async (req, res) => {
     const pendingOrdersCount = await d_checkout.countDocuments({
       status: "pending",
     });
+    const totalOrders = await d_checkout.countDocuments();
 
     const checkout = await d_checkout
       .find()
