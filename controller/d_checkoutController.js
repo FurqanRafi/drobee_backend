@@ -1,138 +1,3 @@
-// import d_checkout from "../models/d_checkoutSchema.js";
-
-// export const createCheckout = async (req, res) => {
-//   try {
-//     // 🚨 Logged-in user from middleware
-//     const loggedUser = req.user;
-
-//     if (!loggedUser) {
-//       return res.status(401).json({ message: "User not authenticated" });
-//     }
-
-//     const { billingDetails, products, totalAmount } = req.body;
-
-//     if (!billingDetails || !products || !totalAmount) {
-//       return res.status(400).json({ message: "All fields are required" });
-//     }
-
-//     if (!Array.isArray(products) || products.length === 0) {
-//       return res
-//         .status(400)
-//         .json({ message: "Products must be a non-empty array" });
-//     }
-
-//     const checkout = await d_checkout.create({
-//       user: {
-//         id: loggedUser.id,
-//         username: loggedUser.username,
-//         email: loggedUser.email,
-//         phone: loggedUser.phone,
-//         address: loggedUser.address,
-//         postalCode: loggedUser.postalCode,
-//         city: loggedUser.city,
-//         country: loggedUser.country,
-//       },
-//       billingDetails: billingDetails, // form email stored here, NOT used for account
-//       products,
-//       totalAmount,
-//     });
-
-//     res.status(201).json(checkout);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
-// export const getCheckout = async (req, res) => {
-//   try {
-//     const checkout = await d_checkout.findById(req.params.id);
-//     if (!checkout)
-//       return res.status(404).json({ message: "Checkout not found" });
-//     res.status(200).json(checkout);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
-// // ✅ FIXED - Proper logging aur error handling
-// export const getCheckoutByUser = async (req, res) => {
-//   try {
-//     const { userId } = req.params;
-
-//     if (req.user._id.toString() !== userId) {
-//       console.log("❌ Unauthorized: User trying to access other's orders");
-//       return res.status(403).json({ message: "Unauthorized access" });
-//     }
-//     const orders = await d_checkout
-//       .find({ "user.id": userId })
-//       .sort({ createdAt: -1 });
-//     console.log("✅ Found orders:", orders.length);
-
-//     res.status(200).json(orders);
-//   } catch (error) {
-//     console.error("❌ Error in getCheckoutByUser:", error);
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
-// export const updateCheckout = async (req, res) => {
-//   try {
-//     const checkout = await d_checkout.findByIdAndUpdate(
-//       req.params.id,
-//       req.body,
-//       { new: true, runValidators: true }
-//     );
-//     if (!checkout)
-//       return res.status(404).json({ message: "Checkout not found" });
-//     res.status(200).json(checkout);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
-// export const deleteCheckout = async (req, res) => {
-//   try {
-//     const checkout = await d_checkout.findByIdAndDelete(req.params.id);
-//     if (!checkout)
-//       return res.status(404).json({ message: "Checkout not found" });
-//     res
-//       .status(200)
-//       .json({ message: "Checkout deleted successfully", checkout });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
-// export const updateCheckoutStatus = async (req, res) => {
-//   try {
-//     const checkout = await d_checkout.findByIdAndUpdate(
-//       req.params.id,
-//       { status: req.body.status },
-//       { new: true, runValidators: true }
-//     );
-//     if (!checkout)
-//       return res.status(404).json({ message: "Checkout not found" });
-//     res.status(200).json(checkout);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
-// // ✅ NAYA - Sirf admin ko access do
-// export const getAllCheckout = async (req, res) => {
-//   try {
-//     // 👇 Check if user is admin (optional, agar admin check chahiye)
-//     console.log("🔍 User from token:", req.user);
-
-//     const checkout = await d_checkout.find();
-
-//     res.status(200).json(checkout);
-//   } catch (error) {
-//     console.error("❌ Error fetching all checkouts:", error);
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
 import d_checkout from "../models/d_checkoutSchema.js";
 
 export const createCheckout = async (req, res) => {
@@ -266,10 +131,27 @@ export const updateCheckoutStatus = async (req, res) => {
 
 export const getAllCheckout = async (req, res) => {
   try {
-    console.log("🔍 User from token:", req.user);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-    const checkout = await d_checkout.find().sort({ createdAt: -1 });
-    res.status(200).json(checkout);
+    const totalOrders = await d_checkout.countDocuments();
+
+    const checkout = await d_checkout
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json({
+      success: true,
+      page,
+      limit,
+      totalOrders,
+      totalPages: Math.ceil(totalOrders / limit),
+      count: checkout.length,
+      orders: checkout,
+    });
   } catch (error) {
     console.error("❌ Error fetching all checkouts:", error);
     res.status(500).json({ message: error.message });
