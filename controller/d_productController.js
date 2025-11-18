@@ -1,16 +1,12 @@
 import d_ProductSchema from "../models/d_ProductSchema.js";
 
-// ✅ Add Product
 export const addProduct = async (req, res) => {
   try {
     const data = req.body;
-
-    // 🧩 Validate category
     if (!data.category) {
       return res.status(400).json({ message: "Category ID is required" });
     }
 
-    // 🧩 Optional: Validate at least one image
     if (
       !data.images ||
       !Array.isArray(data.images) ||
@@ -21,21 +17,17 @@ export const addProduct = async (req, res) => {
         .json({ message: "At least one image is required" });
     }
 
-    // 🧩 Optional: Validate sizes if provided
     if (data.sizes && !Array.isArray(data.sizes)) {
       return res.status(400).json({ message: "Sizes must be an array" });
     }
 
-    // 🧩 Optional: Validate colors if provided
     if (data.colors && !Array.isArray(data.colors)) {
       return res.status(400).json({ message: "Colors must be an array" });
     }
 
-    // ✅ Create product
     const product = new d_ProductSchema(data);
     await product.save();
 
-    // ✅ Populate category after save
     const populatedProduct = await product.populate("category");
 
     res.status(201).json({
@@ -48,22 +40,87 @@ export const addProduct = async (req, res) => {
   }
 };
 
-// ✅ Get All Products (populate category + color reference)
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await d_ProductSchema
-      .find()
-      .populate("category")
-      .populate("images.colour"); // populate color reference for images if any
+    let {
+      page = 1,
+      limit = 10,
+      search = "",
+      category,
+      color,
+      size,
+      minPrice,
+      maxPrice,
+      sort = "latest",
+    } = req.query;
 
-    res.status(200).json({ products });
+    page = Number(page);
+    limit = Number(limit);
+
+    const filters = {};
+
+    if (search) {
+      filters.heading = { $regex: search, $options: "i" };
+    }
+
+    if (category) {
+      filters.category = category;
+    }
+
+    if (color) {
+      filters["colors.name"] = { $regex: color, $options: "i" };
+    }
+
+    if (size) {
+      filters["sizes.label"] = size;
+    }
+
+    if (minPrice || maxPrice) {
+      filters.price = {};
+      if (minPrice) filters.price.$gte = Number(minPrice);
+      if (maxPrice) filters.price.$lte = Number(maxPrice);
+    }
+
+    let sortOption = {};
+
+    switch (sort) {
+      case "price_low":
+        sortOption.price = 1;
+        break;
+      case "price_high":
+        sortOption.price = -1;
+        break;
+      case "latest":
+        sortOption.createdAt = -1;
+        break;
+      case "oldest":
+        sortOption.createdAt = 1;
+        break;
+      default:
+        sortOption.createdAt = -1;
+    }
+
+    const totalProducts = await d_ProductSchema.countDocuments(filters);
+
+    const products = await d_ProductSchema
+      .find(filters)
+      .populate("category")
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort(sortOption);
+
+    res.status(200).json({
+      totalProducts,
+      totalPages: Math.ceil(totalProducts / limit),
+      currentPage: page,
+      products,
+    });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// ✅ Get Product by ID
 export const getProductById = async (req, res) => {
   try {
     const product = await d_ProductSchema
@@ -82,7 +139,6 @@ export const getProductById = async (req, res) => {
   }
 };
 
-// ✅ Update Product
 export const updateProduct = async (req, res) => {
   try {
     const data = req.body;
@@ -106,7 +162,6 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-// ✅ Delete Product
 export const deleteProduct = async (req, res) => {
   try {
     const product = await d_ProductSchema.findByIdAndDelete(req.params.id);
