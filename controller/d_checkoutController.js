@@ -136,6 +136,9 @@ export const getAllCheckout = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const totalOrders = await d_checkout.countDocuments();
+    const pendingOrdersCount = await d_checkout.countDocuments({
+      status: "pending",
+    });
 
     const checkout = await d_checkout
       .find()
@@ -148,6 +151,7 @@ export const getAllCheckout = async (req, res) => {
       page,
       limit,
       totalOrders,
+      pendingOrdersCount,
       totalPages: Math.ceil(totalOrders / limit),
       count: checkout.length,
       orders: checkout,
