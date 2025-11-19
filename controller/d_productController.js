@@ -40,23 +40,6 @@ export const addProduct = async (req, res) => {
   }
 };
 
-// export const getRelatedProducts = async (req, res) => {
-//   try {
-//     const { category, productId } = req.query;
-
-//     const related = await d_ProductSchema
-//       .find({
-//         category,
-//         _id: { $ne: productId },
-//       })
-//       .limit(4);
-
-//     res.status(200).json(related);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
 export const getAllProducts = async (req, res) => {
   try {
     let {
@@ -192,6 +175,33 @@ export const deleteProduct = async (req, res) => {
     });
   } catch (error) {
     console.error("Error deleting product:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getRelatedProducts = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Current product
+    const currentProduct = await d_ProductSchema
+      .findById(id)
+      .populate("category");
+    if (!currentProduct)
+      return res.status(404).json({ message: "Product not found" });
+
+    // Related products by same category (exclude current product)
+    const related = await d_ProductSchema
+      .find({
+        _id: { $ne: id },
+        category: currentProduct.category._id,
+      })
+      .limit(8) // max 8 related products
+      .populate("category");
+
+    res.status(200).json(related);
+  } catch (error) {
+    console.error("Error fetching related products:", error);
     res.status(500).json({ message: error.message });
   }
 };
