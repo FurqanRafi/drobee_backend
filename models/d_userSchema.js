@@ -37,7 +37,17 @@ const d_userSchema = new mongoose.Schema({
     required: true,
   },
 
-  resetPasswordCode: String, 
+  orders: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Checkout", // or whatever your checkout model name is
+    },
+  ],
+
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+
+  resetPasswordCode: String,
   resetPasswordExpires: Date,
 });
 

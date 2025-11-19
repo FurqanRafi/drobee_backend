@@ -280,6 +280,7 @@ export const getUsers = async (req, res) => {
   try {
     const users = await d_user
       .find({})
+      .populate("orders") // ✅ Populate orders
       .select("username email phone address postalCode city country");
 
     res.status(200).json({

@@ -1,4 +1,5 @@
 import d_checkout from "../models/d_checkoutSchema.js";
+import D_User from "../models/d_userSchema.js";
 
 export const createCheckout = async (req, res) => {
   try {
@@ -45,6 +46,12 @@ export const createCheckout = async (req, res) => {
       shippingCost: shippingCost || 0,
       paymentMethod: paymentMethod || "Cash on Delivery",
     });
+
+    await D_User.findByIdAndUpdate(
+      loggedUser._id,
+      { $push: { orders: checkout._id } },
+      { new: true }
+    );
 
     res.status(201).json(checkout);
   } catch (error) {
