@@ -40,11 +40,28 @@ export const addProduct = async (req, res) => {
   }
 };
 
+export const getRelatedProducts = async (req, res) => {
+  try {
+    const { category, productId } = req.query;
+
+    const related = await d_ProductSchema
+      .find({
+        category,
+        _id: { $ne: productId },
+      })
+      .limit(4);
+
+    res.status(200).json(related);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getAllProducts = async (req, res) => {
   try {
     let {
       page = 1,
-      limit = 50000,
+      limit = 8,
       search = "",
       category,
       color,
@@ -64,7 +81,7 @@ export const getAllProducts = async (req, res) => {
     }
 
     if (category) {
-      filters.category = category;
+      filters.category = new mongoose.Types.ObjectId(category); // ✅ FIX
     }
 
     if (color) {
