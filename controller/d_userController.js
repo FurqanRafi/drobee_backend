@@ -278,7 +278,9 @@ export const getUsersCount = async (req, res) => {
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await d_user.find({}).select("username email phone");
+    const users = await d_user
+      .find({})
+      .select("username email phone address postalCode city country");
 
     res.status(200).json({
       success: true,
