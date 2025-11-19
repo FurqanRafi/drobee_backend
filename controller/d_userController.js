@@ -2,7 +2,7 @@ import d_user from "../models/d_userSchema.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
-// ✅ Generate Token
+
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
@@ -20,13 +20,11 @@ export const register = async (req, res) => {
       country,
     } = req.body;
 
-    // Check if email already exists
     const existingEmail = await d_user.findOne({ email });
     if (existingEmail) {
       return res.status(400).json({ message: "Email already in use" });
     }
 
-    // Check if username already exists
     const existingUsername = await d_user.findOne({ username });
     if (existingUsername) {
       return res.status(400).json({ message: "Username already taken" });
@@ -57,12 +55,10 @@ export const register = async (req, res) => {
   }
 };
 
-// ✅ LOGIN (Email or Username)
 export const login = async (req, res) => {
   try {
-    const { identifier, password } = req.body; // identifier can be email or username
+    const { identifier, password } = req.body; 
 
-    // Find user by email or username
     let user = await d_user.findOne({ email: identifier });
     if (!user) {
       user = await d_user.findOne({ username: identifier });
@@ -74,7 +70,6 @@ export const login = async (req, res) => {
         .json({ message: "Invalid username/email or password" });
     }
 
-    // Check password
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res
@@ -103,7 +98,6 @@ export const login = async (req, res) => {
   }
 };
 
-// ✅ GET PROFILE
 export const getUserProfile = async (req, res) => {
   try {
     const user = await d_user.findById(req.user._id).select("-password");
@@ -115,7 +109,6 @@ export const getUserProfile = async (req, res) => {
   }
 };
 
-// ✅ UPDATE PROFILE
 export const updateUserProfile = async (req, res) => {
   try {
     let user = await d_user.findById(req.user._id);
@@ -155,7 +148,6 @@ export const updateUserProfile = async (req, res) => {
   }
 };
 
-// ✅ DELETE USER
 export const deleteUserProfile = async (req, res) => {
   try {
     await d_user.findByIdAndDelete(req.user._id);
@@ -165,7 +157,6 @@ export const deleteUserProfile = async (req, res) => {
   }
 };
 
-// ✅ CHANGE PASSWORD
 export const changePassword = async (req, res) => {
   try {
     const user = await d_user.findById(req.user._id);
@@ -173,12 +164,11 @@ export const changePassword = async (req, res) => {
 
     const { oldPassword, newPassword } = req.body;
 
-    // Check old password
+ 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Incorrect old password" });
 
-    // Update password
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
 
@@ -188,7 +178,6 @@ export const changePassword = async (req, res) => {
   }
 };
 
-// ✅ CHANGE EMAIL
 export const changeEmail = async (req, res) => {
   try {
     const user = await d_user.findById(req.user._id);
@@ -196,17 +185,15 @@ export const changeEmail = async (req, res) => {
 
     const { newEmail, password } = req.body;
 
-    // Verify current password
+ 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Incorrect password" });
 
-    // Check if email already exists
     const existingUser = await d_user.findOne({ email: newEmail });
     if (existingUser)
       return res.status(400).json({ message: "Email already in use" });
 
-    // Update email
     user.email = newEmail;
     await user.save();
 
@@ -230,7 +217,6 @@ export const forgotPassword = async (req, res) => {
         .status(404)
         .json({ message: "No account found with this email" });
 
-    // Generate 4-digit code
     const code = Math.floor(1000 + Math.random() * 9000).toString();
 
     user.resetPasswordCode = code;
@@ -241,7 +227,7 @@ export const forgotPassword = async (req, res) => {
       service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // This must be the App Password, not your normal Gmail password
+        pass: process.env.EMAIL_PASS, 
       },
     });
 
@@ -272,7 +258,6 @@ export const resetPassword = async (req, res) => {
     if (Date.now() > user.resetPasswordExpires)
       return res.status(400).json({ message: "Code expired" });
 
-    // Update password
     user.password = await bcrypt.hash(newPassword, 10);
     user.resetPasswordCode = undefined;
     user.resetPasswordExpires = undefined;
