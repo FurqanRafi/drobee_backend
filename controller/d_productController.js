@@ -40,22 +40,22 @@ export const addProduct = async (req, res) => {
   }
 };
 
-export const getRelatedProducts = async (req, res) => {
-  try {
-    const { category, productId } = req.query;
+// export const getRelatedProducts = async (req, res) => {
+//   try {
+//     const { category, productId } = req.query;
 
-    const related = await d_ProductSchema
-      .find({
-        category,
-        _id: { $ne: productId },
-      })
-      .limit(4);
+//     const related = await d_ProductSchema
+//       .find({
+//         category,
+//         _id: { $ne: productId },
+//       })
+//       .limit(4);
 
-    res.status(200).json(related);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+//     res.status(200).json(related);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 
 export const getAllProducts = async (req, res) => {
   try {
