@@ -40,7 +40,7 @@ const d_userSchema = new mongoose.Schema({
   orders: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Checkout", // or whatever your checkout model name is
+      ref: "D_checkout", // or whatever your checkout model name is
     },
   ],
 
