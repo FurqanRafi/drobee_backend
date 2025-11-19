@@ -1,4 +1,5 @@
 import d_ProductSchema from "../models/d_ProductSchema.js";
+import mongoose from "mongoose"; // ✅ ADD THIS IMPORT
 
 export const addProduct = async (req, res) => {
   try {
@@ -64,7 +65,7 @@ export const getAllProducts = async (req, res) => {
     }
 
     if (category) {
-      filters.category = new mongoose.Types.ObjectId(category); // ✅ FIX
+      filters.category = new mongoose.Types.ObjectId(category);
     }
 
     if (color) {
@@ -125,8 +126,7 @@ export const getProductById = async (req, res) => {
   try {
     const product = await d_ProductSchema
       .findById(req.params.id)
-      .populate("category")
-      .populate("images.colour");
+      .populate("category");
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
@@ -145,8 +145,7 @@ export const updateProduct = async (req, res) => {
 
     const updatedProduct = await d_ProductSchema
       .findByIdAndUpdate(req.params.id, data, { new: true })
-      .populate("category")
-      .populate("images.colour");
+      .populate("category");
 
     if (!updatedProduct) {
       return res.status(404).json({ message: "Product not found" });
@@ -196,7 +195,7 @@ export const getRelatedProducts = async (req, res) => {
         _id: { $ne: id },
         category: currentProduct.category._id,
       })
-      .limit(8) // max 8 related products
+      .limit(8)
       .populate("category");
 
     res.status(200).json(related);
