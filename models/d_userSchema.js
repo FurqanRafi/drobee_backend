@@ -37,8 +37,7 @@ const d_userSchema = new mongoose.Schema({
     required: true,
   },
 
-  // ✅ For Forgot Password
-  resetPasswordCode: String, // Store 6-digit code
+  resetPasswordCode: String, 
   resetPasswordExpires: Date,
 });
 

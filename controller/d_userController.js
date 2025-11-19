@@ -57,7 +57,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { identifier, password } = req.body; 
+    const { identifier, password } = req.body;
 
     let user = await d_user.findOne({ email: identifier });
     if (!user) {
@@ -164,7 +164,6 @@ export const changePassword = async (req, res) => {
 
     const { oldPassword, newPassword } = req.body;
 
- 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Incorrect old password" });
@@ -185,7 +184,6 @@ export const changeEmail = async (req, res) => {
 
     const { newEmail, password } = req.body;
 
- 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Incorrect password" });
@@ -227,7 +225,7 @@ export const forgotPassword = async (req, res) => {
       service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, 
+        pass: process.env.EMAIL_PASS,
       },
     });
 
