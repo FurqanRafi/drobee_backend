@@ -1,0 +1,44 @@
+# Node modules
+node_modules/
+
+# Build output
+.next/
+out/
+dist/
+
+# Env files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Temporary Files
+*.log
+*.tmp
+
+# Typescript build
+*.tsbuildinfo
+
+# Folder created by next export
+out/
+
+# Local env overrides
+.vercel/
+
+# Dependency lock removed intentionally (if needed)
+package-lock.json
