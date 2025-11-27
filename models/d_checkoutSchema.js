@@ -6,7 +6,6 @@ const d_checkoutSchema = new mongoose.Schema(
         id:{
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
         username: String,
         email: String,

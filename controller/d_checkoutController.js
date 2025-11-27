@@ -3,12 +3,6 @@ import D_User from "../models/d_userSchema.js";
 
 export const createCheckout = async (req, res) => {
   try {
-    const loggedUser = req.user;
-
-    if (!loggedUser) {
-      return res.status(401).json({ message: "User not authenticated" });
-    }
-
     const {
       billingDetails,
       products,
@@ -16,6 +10,7 @@ export const createCheckout = async (req, res) => {
       discount,
       shippingCost,
       paymentMethod,
+      user,
     } = req.body;
 
     if (!billingDetails || !products || !totalAmount) {
@@ -27,18 +22,9 @@ export const createCheckout = async (req, res) => {
         .status(400)
         .json({ message: "Products must be a non-empty array" });
     }
-
+    console.log(user)
     const checkout = await d_checkout.create({
-      user: {
-        id: loggedUser._id,
-        username: loggedUser.username,
-        email: loggedUser.email,
-        phone: loggedUser.phone,
-        address: loggedUser.address,
-        postalCode: loggedUser.postalCode,
-        city: loggedUser.city,
-        country: loggedUser.country,
-      },
+      user,
       billingDetails,
       products,
       totalAmount,
@@ -46,15 +32,17 @@ export const createCheckout = async (req, res) => {
       shippingCost: shippingCost || 0,
       paymentMethod: paymentMethod || "Cash on Delivery",
     });
-
-    await D_User.findByIdAndUpdate(
-      loggedUser._id,
-      { $push: { orders: checkout._id } },
-      { new: true }
-    );
+    if (user.id) {
+      await D_User.findByIdAndUpdate(
+        user.id,
+        { $push: { orders: checkout.id } },
+        { new: true }
+      );
+    }
 
     res.status(201).json(checkout);
   } catch (error) {
+    console.log("❌ Error in createCheckout:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -73,11 +61,6 @@ export const getCheckout = async (req, res) => {
 export const getCheckoutByUser = async (req, res) => {
   try {
     const { userId } = req.params;
-
-    if (req.user._id.toString() !== userId) {
-      console.log("❌ Unauthorized: User trying to access other's orders");
-      return res.status(403).json({ message: "Unauthorized access" });
-    }
 
     // ✅ Fixed query to match schema
     const orders = await d_checkout
