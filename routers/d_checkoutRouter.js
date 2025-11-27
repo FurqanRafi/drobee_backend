@@ -15,11 +15,11 @@ const router = express.Router();
 // ✅ PUBLIC ROUTES - No token needed
 router.get("/checkout", getAllCheckout);
 router.get("/checkout/:id", getCheckout);
-router.get("/checkout/user/:userId", authMiddleware, getCheckoutByUser);
+router.get("/checkout/user/:userId", getCheckoutByUser);
 
-router.post("/checkout", authMiddleware, createCheckout);
-router.put("/checkout/:id", authMiddleware, updateCheckout);
-router.put("/checkout/:id/status", authMiddleware, updateCheckoutStatus);
-router.delete("/checkout/:id", authMiddleware, deleteCheckout);
+router.post("/checkout", createCheckout);
+router.put("/checkout/:id", updateCheckout);
+router.put("/checkout/:id/status", updateCheckoutStatus);
+router.delete("/checkout/:id", deleteCheckout);
 
 export default router;
