@@ -22,7 +22,7 @@ export const createCheckout = async (req, res) => {
         .status(400)
         .json({ message: "Products must be a non-empty array" });
     }
-    console.log(user)
+    console.log(user);
     const checkout = await d_checkout.create({
       user,
       billingDetails,
@@ -125,11 +125,22 @@ export const getAllCheckout = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const pendingOrdersCount = await d_checkout.countDocuments({
-      status: "pending",
-    });
-    const totalOrders = await d_checkout.countDocuments();
+    // Get total counts for all statuses
+    const [
+      totalOrders,
+      pendingCount,
+      shippedCount,
+      deliveredCount,
+      cancelledCount,
+    ] = await Promise.all([
+      d_checkout.countDocuments(),
+      d_checkout.countDocuments({ status: "pending" }),
+      d_checkout.countDocuments({ status: "shipped" }),
+      d_checkout.countDocuments({ status: "delivered" }),
+      d_checkout.countDocuments({ status: "cancelled" }),
+    ]);
 
+    // Get paginated orders
     const checkout = await d_checkout
       .find()
       .sort({ createdAt: -1 })
@@ -141,10 +152,16 @@ export const getAllCheckout = async (req, res) => {
       page,
       limit,
       totalOrders,
-      pendingOrdersCount,
       totalPages: Math.ceil(totalOrders / limit),
       count: checkout.length,
       orders: checkout,
+      // ✅ Add stats object with all status counts
+      stats: {
+        pending: pendingCount,
+        shipped: shippedCount,
+        delivered: deliveredCount,
+        cancelled: cancelledCount,
+      },
     });
   } catch (error) {
     console.error("❌ Error fetching all checkouts:", error);
