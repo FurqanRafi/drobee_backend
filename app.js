@@ -10,6 +10,7 @@ import shippingRouter from "./routers/d_shippingRoute.js";
 import checkoutRouter from "./routers/d_checkoutRouter.js";
 import stripeRouter from "./routers/striprRoute.js";
 import cors from "cors";
+import webhookRouter from "./routers/webhookRoute.js";
 const app = express();
 app.use(
   cors({
@@ -18,6 +19,8 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+// ⚠ Webhook route MUST come BEFORE express.json()
+app.use("/api", webhookRouter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
