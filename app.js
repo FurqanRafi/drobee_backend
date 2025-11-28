@@ -14,9 +14,9 @@ import cors from "cors";
 const app = express();
 app.use(
   cors({
-    origin: "*", // or your frontend domain
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: ["http://localhost:3000", "https://drobee-shop.vercel.app/"],
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true,
   })
 );
 
