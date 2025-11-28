@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import dotenv from "dotenv";
-import D_checkout from "../models/d_checkout.js";
+import D_checkout from "../models/d_checkoutSchema.js";
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRETE_KEY);
