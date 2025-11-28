@@ -1,13 +1,13 @@
 import Stripe from "stripe";
 import dotenv from "dotenv";
-import D_checkout from "../models/d_checkout.js";
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRETE_KEY);
 
 export const createPaymentIntent = async (req, res) => {
   try {
-    const { amount, orderId, products, shipping, billingDetails, user } = req.body;
+    const { amount, orderId, products, shipping, billingDetails, user } =
+      req.body;
 
     if (!amount || amount <= 0) {
       return res.status(400).json({ message: "Invalid amount" });
